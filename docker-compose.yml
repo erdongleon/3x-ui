@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: ./Dockerfile
     container_name: 3xui_app
-    # hostname: yourhostname <- optional
     volumes:
       - $PWD/db/:/etc/x-ui/
       - $PWD/cert/:/root/cert/
@@ -12,17 +11,12 @@ services:
       XRAY_VMESS_AEAD_FORCED: "false"
       XUI_ENABLE_FAIL2BAN: "true"
     tty: true
-    network_mode: host
     restart: unless-stopped
-    labels:
-      - traefik.enable=true
-      - "traefik.http.services.3xui.loadbalancer.server.port=2053"      # 容器内部实际端口
-      - "traefik.http.services.3xui.loadbalancer.server.scheme=http"
-      - "traefik.http.routers.https-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
-      - "traefik.http.routers.http-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
-      - "traefik.http.services.xhttp20153.loadbalancer.server.port=20153"
-      - "traefik.http.services.xhttp20153.loadbalancer.server.scheme=http"
-      - 'traefik.http.routers.xhttp20153.rule=Host(`us.hanako.meme`) && PathPrefix(`/xhttp`)'  # 用 /xhttp 路径区分
-      - "traefik.http.routers.xhttp20153.service=xhttp20153"
-      - "traefik.http.routers.xhttp20153.entrypoints=websecure"
-      - "traefik.http.routers.xhttp20153.tls.certresolver=letsencrypt"
+
+    # ==================== 关键修改部分 ====================
+    # 删除 network_mode: host
+    # 改为 ports 映射（桥接模式）
+    ports:
+      - "14253:2053"     # 面板端口（推荐改成高位随机端口，防止被扫描）
+      - "22504:22504"    # 你的 Reality 节点端口
+      - "20153:20153"    # 你的 HTTPX / WS 节点端口（如果以后要直连就保留）
