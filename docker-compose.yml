@@ -14,3 +14,9 @@ services:
     tty: true
     network_mode: host
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - "traefik.http.services.3xui.loadbalancer.server.port=2053"      # 容器内部实际端口
+      - "traefik.http.services.3xui.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.https-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
+      - "traefik.http.routers.http-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
