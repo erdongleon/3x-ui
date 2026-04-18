@@ -13,10 +13,9 @@ services:
     tty: true
     restart: unless-stopped
 
-    # ==================== 关键修改部分 ====================
-    # 删除 network_mode: host
-    # 改为 ports 映射（桥接模式）
-    ports:
-      - "2053:2053"     # 面板端口（推荐改成高位随机端口，防止被扫描）
-      - "22504:22504"    # 你的 Reality 节点端口
-      - "20153:20153"    # 你的 HTTPX / WS 节点端口（如果以后要直连就保留）
+    labels:
+      - traefik.enable=true
+      - "traefik.http.services.3xui.loadbalancer.server.port=2053"      # 容器内部实际端口
+      - "traefik.http.services.3xui.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.https-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
+      - "traefik.http.routers.http-0-dwdtlsmw34ky2tl3e0v4zgk3-3xui.service=3xui"
